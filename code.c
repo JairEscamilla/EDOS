@@ -11,6 +11,7 @@ typedef struct defNodo{
 float f(float x, float y);
 void agregarNodo(float x, float y, Nodo** Inicio);
 void euler(float x0, float y0, int n, float h, Nodo** Inicio);
+void guardarEnArchivo(Nodo* Inicio);
 // FUNCION PRINCIPAL
 int main(){
   int n;
@@ -25,6 +26,8 @@ int main(){
   printf("Ingresar numero de pasos (n)-> ");
   scanf("%d", &n);
   euler(x0, y0, n, h, &Inicio);
+  guardarEnArchivo(Inicio);
+  printf("Ejecucion terminada... \n");
   return 0;
 }
 
@@ -37,14 +40,15 @@ float f(float x, float y){
 
 // Funcion que agrega un nodo a la lista dinamica
 void agregarNodo(float x, float y, Nodo** Inicio){
-  Nodo* temp = *Inicio;
+  Nodo* temp;
   Nodo* temp2 = (Nodo*)malloc(sizeof(Nodo));
   temp2->x = x;
   temp2->y = y;
   temp2->sig = NULL;
-  if (temp == NULL) {
-    *Inicio = temp;
+  if (*Inicio == NULL) {
+    *Inicio = temp2;
   }else{
+    temp = *Inicio;
     while (temp->sig != NULL) {
       temp = temp->sig;
     }
@@ -64,3 +68,15 @@ void euler(float x0, float y0, int n, float h, Nodo** Inicio){
     ant = ant->sig;
   }
 }
+
+// Funcion que almacena en un archivo los valores generados
+void guardarEnArchivo(Nodo* Inicio){
+  Nodo* temp = Inicio;
+  FILE* fp = fopen("solucion.dat", "wt");
+  while (temp != NULL) {
+    fprintf(fp, "%f, %f\n", temp->x, temp->y);
+    temp = temp->sig;
+  }
+  fclose(fp);
+}
+//  plot exp(x)*(-x*exp(-x)-exp(-x)+2), "solucion.dat" with lines
