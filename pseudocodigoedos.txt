@@ -1,0 +1,74 @@
+Principal( | ){
+  imprimir("Ingresar x0: ");
+  leer(x0);
+  imprimir("Ingresar y0: ");
+  leer(y0);
+  imprimir("Ingresar el salto (h): ");
+  leer(h);
+  imprimir("Ingresar la cantidad de pasos (n): ");
+  leer(n);
+  ↑Inicio = NULL;
+  euler(x0, y0, h, n | Inicio);
+  guardarEnArchivo(Inicio);
+  len = longitud(Inicio);
+  graficarSolucion(len);
+}
+f(x, y | result){
+  result = x + y;
+}
+
+euler(x0, y0, h, n | Inicio){
+  xaux = 0;
+  yaux = 0;
+  agregarNodo(x0, yo, Inicio);
+  ant = Inicio;
+  next = (*Inicio)->sig;
+  Para i = 0 hasta i = n{
+      yaux = ant->y + h*f(ant->x, ant->y);
+      xaux = ant->x + h;
+      agregarNodo(xaux, yaux, Inicio);
+  }
+}
+agregarNodo(x, y, Inicio){
+  ↑n = Inicio;
+  ↑temp = new Nodo;
+  ↑temp.x = x;
+  ↑temp.y = y;
+  ↑temp.sig = NULL;
+  Si(↑Inicio == NULL)
+    ↑Inicio = temp;
+  sino{
+    ↑temp2 = Inicio;
+    mientras(↑temp2.sig != NULL)
+      temp2 = temp2.sig;
+    temp2.sig = temp;
+  }
+}
+
+guardarEnArchivo(Inicio){
+  temp = Inicio;
+  fp = abrirArchivo("solucion.dat", "wt");
+  mientras(temp != NULL){
+    escribirEnArchivo(temp.x, temp.y);
+    temp = temp.sig;
+  }
+  cerrarArchivo(fp);
+}
+
+graficarSolucion(len){
+  commandsForGnuplot[] = {"set title \"Solucion de la ecuacion diferencial\"", "plot 'solucion.dat'"};
+  gnuplotPipe = abrirArchivo ("gnuplot -persistent", "wt");
+  Para i=0 hasta i < len{
+   imprimirEnArchivo(gnuplotPipe, "%s \n", commandsForGnuplot[i]); //Send commands to gnuplot one by one.
+  }
+}
+
+longitud(Inicio){
+  temp = Inicio;
+  len = 0;
+  mientras(temp != NULL){
+    len++;
+    temp = temp->sig;
+  }
+  regresa len;
+}
