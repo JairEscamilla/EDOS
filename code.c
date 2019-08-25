@@ -12,6 +12,7 @@ float f(float x, float y);
 void agregarNodo(float x, float y, Nodo** Inicio);
 void euler(float x0, float y0, int n, float h, Nodo** Inicio);
 void guardarEnArchivo(Nodo* Inicio);
+void liberarMemoria(Nodo* Inicio);
 // FUNCION PRINCIPAL
 int main(){
   int n;
@@ -25,9 +26,11 @@ int main(){
   scanf("%f", &h);
   printf("Ingresar numero de pasos (n)-> ");
   scanf("%d", &n);
+  printf("Espere un momento mientras se calcula la solucion... \n");
   euler(x0, y0, n, h, &Inicio);
   guardarEnArchivo(Inicio);
   printf("Ejecucion terminada... \n");
+  liberarMemoria(Inicio);
   return 0;
 }
 
@@ -80,3 +83,14 @@ void guardarEnArchivo(Nodo* Inicio){
   fclose(fp);
 }
 //  plot exp(x)*(-x*exp(-x)-exp(-x)+2), "solucion.dat" with lines
+
+// Funcion que libera la memoria de la computadora
+void liberarMemoria(Nodo* Inicio){
+  Nodo* temp = Inicio;
+  Nodo* ant = Inicio;
+  while (temp != NULL) {
+    temp = temp->sig;
+    free(ant);
+    ant = temp;
+  }
+}
