@@ -13,6 +13,7 @@ void agregarNodo(float x, float y, Nodo** Inicio);
 void euler(float x0, float y0, int n, float h, Nodo** Inicio);
 void guardarEnArchivo(Nodo* Inicio);
 void liberarMemoria(Nodo* Inicio);
+void plot();
 // FUNCION PRINCIPAL
 int main(){
   int n;
@@ -31,6 +32,7 @@ int main(){
   guardarEnArchivo(Inicio);
   printf("Ejecucion terminada... \n");
   liberarMemoria(Inicio);
+  plot();
   return 0;
 }
 
@@ -92,5 +94,18 @@ void liberarMemoria(Nodo* Inicio){
     temp = temp->sig;
     free(ant);
     ant = temp;
+  }
+}
+
+// Función que gráfica el archivo de texto generado
+void plot(){
+  char * configGnuplot[] = {"set title \"Solucion a la ecuación diferencial\"",
+                                "set ylabel \"Y\"",
+                                "set xlabel \"X\"",
+                                "plot \"solucion.dat\" with lines"
+                               };
+  FILE * ventanaGnuplot = popen ("gnuplot -persist", "w");
+  for (int i=0; i < 4; i++){
+    fprintf(ventanaGnuplot, "%s \n", configGnuplot[i]);
   }
 }
