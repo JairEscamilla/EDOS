@@ -9,13 +9,15 @@ float f(float x, float y);
 void euler(float x0, float y0, int n, float h);
 float* generarArreglo(int cant);
 float** generarMatriz(int ancho, int alto);
+void pedirCoeficientes(float* valoresInicialesx, float* valoresInicialesy, int orden);
+void valoresUT(float* ut, int orden);
 void liberarMemoria(float* arr);
 void liberarMemoriaMat(float** matriz, int alto);
 void plot();
 // FUNCION PRINCIPAL
 int main(){
   int n, orden;
-  float h, x0, y0, *valoresNuevos, *valoresIniciales, *uT, **Matriz;
+  float h, x0, y0, *valoresNuevos, *valoresInicialesy, *valoresInicialesx, *uT, **Matriz;
   printf("Ingresar el orden de la EDO-> ");
   scanf("%d", &orden);
   printf("Ingresar tamaño de salto (h)-> ");
@@ -32,15 +34,19 @@ int main(){
     printf("Ejecucion terminada... \n");
   }else{
     valoresNuevos = generarArreglo(orden);
-    valoresIniciales = generarArreglo(orden);
+    valoresInicialesx = generarArreglo(orden);
+    valoresInicialesy = generarArreglo(orden);
     uT = generarArreglo(orden);
     Matriz = generarMatriz(orden, orden);
+    pedirCoeficientes(valoresInicialesx, valoresInicialesy, orden);
+    valoresUT(uT, orden);
     liberarMemoria(valoresNuevos);
-    liberarMemoria(valoresIniciales);
+    liberarMemoria(valoresInicialesx);
+    liberarMemoria(valoresInicialesy);
     liberarMemoria(uT);
     liberarMemoriaMat(Matriz, orden);
   }
-  plot();
+  //plot();
   return 0;
 }
 
@@ -80,6 +86,24 @@ float** generarMatriz(int ancho, int alto){
     for(int i = 0; i < alto; i++)
       Matriz[i] = (float*)malloc(ancho*sizeof(float)); // Filas
   return Matriz;
+}
+
+void pedirCoeficientes(float* valoresInicialesx, float* valoresInicialesy, int orden){
+  for(int i = 0; i < orden; i++){
+    printf("Ingresar x%d inicial-> ", i);
+    scanf("%f", &valoresInicialesx[i]);
+    printf("Ingresar y%d inicial-> ", i);
+    scanf("%f", &valoresInicialesy[i]);
+  }
+}
+
+void valoresUT(float* ut, int orden){
+  for(int i = 0; i < orden; i++){
+    if(i == orden-1)
+      ut[i] = 1;
+    else
+      ut[i] = 0;
+  }
 }
 
 void liberarMemoria(float* arr){
