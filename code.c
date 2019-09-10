@@ -8,12 +8,14 @@
 float f(float x, float y);
 void euler(float x0, float y0, int n, float h);
 float* generarArreglo(int cant);
+float** generarMatriz(int ancho, int alto);
 void liberarMemoria(float* arr);
+void liberarMemoriaMat(float** matriz, int alto);
 void plot();
 // FUNCION PRINCIPAL
 int main(){
   int n, orden;
-  float h, x0, y0, *valoresNuevos, *valoresIniciales, *uT;
+  float h, x0, y0, *valoresNuevos, *valoresIniciales, *uT, **Matriz;
   printf("Ingresar el orden de la EDO-> ");
   scanf("%d", &orden);
   printf("Ingresar tamaño de salto (h)-> ");
@@ -32,10 +34,11 @@ int main(){
     valoresNuevos = generarArreglo(orden);
     valoresIniciales = generarArreglo(orden);
     uT = generarArreglo(orden);
-
+    Matriz = generarMatriz(orden, orden);
     liberarMemoria(valoresNuevos);
     liberarMemoria(valoresIniciales);
     liberarMemoria(uT);
+    liberarMemoriaMat(Matriz, orden);
   }
   plot();
   return 0;
@@ -72,8 +75,20 @@ float* generarArreglo(int cant){
   return (float*)malloc(cant*sizeof(float));
 }
 
+float** generarMatriz(int ancho, int alto){
+  float **Matriz = (float**)malloc(alto*sizeof(float*)); // Columnas
+    for(int i = 0; i < alto; i++)
+      Matriz[i] = (float*)malloc(ancho*sizeof(float)); // Filas
+  return Matriz;
+}
+
 void liberarMemoria(float* arr){
   free(arr);
+}
+void liberarMemoriaMat(float** matriz, int alto){
+  for(int i = 0; i < alto; i++)
+    free(matriz[i]);// Filas
+  free(matriz); // Columnas
 }
 
 // Función que gráfica el archivo de texto generado
