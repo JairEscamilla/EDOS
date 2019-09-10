@@ -13,6 +13,7 @@ void pedirCoeficientes(float* valoresInicialesx, float* valoresInicialesy, int o
 void valoresUT(float* ut, int orden);
 void liberarMemoria(float* arr);
 void liberarMemoriaMat(float** matriz, int alto);
+void llenarMatriz(float** Matriz, int orden, float coeficientes[]);
 void plot();
 // FUNCION PRINCIPAL
 int main(){
@@ -40,13 +41,14 @@ int main(){
     Matriz = generarMatriz(orden, orden);
     pedirCoeficientes(valoresInicialesx, valoresInicialesy, orden);
     valoresUT(uT, orden);
+    llenarMatriz(Matriz, orden, valoresInicialesy);
     liberarMemoria(valoresNuevos);
     liberarMemoria(valoresInicialesx);
     liberarMemoria(valoresInicialesy);
     liberarMemoria(uT);
     liberarMemoriaMat(Matriz, orden);
   }
-  //plot();
+  plot();
   return 0;
 }
 
@@ -104,6 +106,27 @@ void valoresUT(float* ut, int orden){
     else
       ut[i] = 0;
   }
+}
+
+void llenarMatriz(float** Matriz, int orden, float coeficientes[]){
+  for(int i = 0; i < orden - 1; i++){
+    for(int j = 0; j < orden; j++){
+      Matriz[i][j] = 0;
+    }
+  }
+  for(int i = 0; i < orden; i++)
+    Matriz[i][i+1] = 1;
+  for(int i = 0; i < orden; i++){
+    Matriz[orden-1][i] = coeficientes[i];
+  }
+
+  /*for(int i = 0; i < orden; i++){
+    for(int j = 0; j < orden; j++){
+      printf("%f ", Matriz[i][j]);
+    }
+    printf("\n");
+  }*/
+
 }
 
 void liberarMemoria(float* arr){
