@@ -9,16 +9,21 @@ float f(float x, float y);
 void euler(float x0, float y0, int n, float h);
 float* generarArreglo(int cant);
 float** generarMatriz(int ancho, int alto);
-void pedirCoeficientes(float* valoresInicialesx, float* valoresInicialesy, int orden);
+void pedirValoresIniciales(float* valoresInicialesx, float* valoresInicialesy, int orden);
 void valoresUT(float* ut, int orden);
 void liberarMemoria(float* arr);
 void liberarMemoriaMat(float** matriz, int alto);
 void llenarMatriz(float** Matriz, int orden, float coeficientes[]);
+void resolverEcuacion(float** Matriz, float* valoresInicialesy, float* valoresInicialesx, float* uT, float h, int n, int orden);
+float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden);
+float* matrizporEscalar(float* ut, float h, float x, float y, int orden);
+void pedirCoeficientes(float* coeficientes, int orden);
+float* sumarVectores(float* v1, float* v2, int orden);
 void plot();
 // FUNCION PRINCIPAL
 int main(){
   int n, orden;
-  float h, x0, y0, *valoresNuevos, *valoresInicialesy, *valoresInicialesx, *uT, **Matriz;
+  float h, x0, y0, *valoresNuevos, *valoresInicialesy, *valoresInicialesx, *uT, **Matriz, *coeficientes;
   printf("Ingresar el orden de la EDO-> ");
   scanf("%d", &orden);
   printf("Ingresar tamaño de salto (h)-> ");
@@ -34,15 +39,16 @@ int main(){
     euler(x0, y0, n, h);
     printf("Ejecucion terminada... \n");
   }else{
-    valoresNuevos = generarArreglo(orden);
     valoresInicialesx = generarArreglo(orden);
     valoresInicialesy = generarArreglo(orden);
+    coeficientes = generarArreglo(orden);
     uT = generarArreglo(orden);
     Matriz = generarMatriz(orden, orden);
-    pedirCoeficientes(valoresInicialesx, valoresInicialesy, orden);
+    pedirValoresIniciales(valoresInicialesx, valoresInicialesy, orden);
+    pedirCoeficientes(coeficientes, orden);
     valoresUT(uT, orden);
-    llenarMatriz(Matriz, orden, valoresInicialesy);
-    liberarMemoria(valoresNuevos);
+    llenarMatriz(Matriz, orden, coeficientes);
+    resolverEcuacion(Matriz, valoresInicialesy, valoresInicialesx, uT, h, n, orden);
     liberarMemoria(valoresInicialesx);
     liberarMemoria(valoresInicialesy);
     liberarMemoria(uT);
@@ -90,7 +96,7 @@ float** generarMatriz(int ancho, int alto){
   return Matriz;
 }
 
-void pedirCoeficientes(float* valoresInicialesx, float* valoresInicialesy, int orden){
+void pedirValoresIniciales(float* valoresInicialesx, float* valoresInicialesy, int orden){
   for(int i = 0; i < orden; i++){
     printf("Ingresar x%d inicial-> ", i);
     scanf("%f", &valoresInicialesx[i]);
@@ -105,6 +111,56 @@ void valoresUT(float* ut, int orden){
       ut[i] = 1;
     else
       ut[i] = 0;
+  }
+}
+
+void resolverEcuacion(float** Matriz, float* valoresInicialesy, float* valoresInicialesx, float* uT, float h, int n, int orden){
+  FILE* fp = fopen("solucion.dat", "wt");
+  fprintf(fp, "%f, %f\n", valoresInicialesx[orden-1], valoresInicialesy[orden-1]);
+  for(int i = 0; i < n; i++){
+    valoresInicialesy = sumarVectores(multiplicarMatrices(Matriz, valoresInicialesy, orden), matrizporEscalar(uT, h, valoresInicialesx[orden-1], valoresInicialesy[orden-1], orden), orden);
+    for(int j = 0; j < orden; j++){
+      valoresInicialesx[j] = valoresInicialesx[j] + h;
+    }
+    fprintf(fp, "%f, %f\n", valoresInicialesx[orden-1], valoresInicialesy[orden-1]);
+  }
+  fclose(fp);
+}
+
+
+float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden){
+  float contador = 0;
+  float* resultado = generarArreglo(orden);
+  for(int i = 0; i < orden; i++){
+    contador = 0;
+    for(int j = 0; j < orden; j++){
+      contador+= Matriz1[i][j] * Matriz2[j];
+    }
+    resultado[i] = contador;
+  }
+  return resultado;
+}
+
+float* matrizporEscalar(float* ut, float h, float x, float y, int orden){
+  float *resultados = generarArreglo(orden);
+  for(int i = 0; i < orden; i++){
+    resultados[i] = ut[i]*h*f(x, y);
+  }
+  return resultados;
+}
+
+float* sumarVectores(float* v1, float* v2, int orden){
+  float* resultado = generarArreglo(orden);
+  for(int i = 0; i < orden; i++){
+    resultado[i] = v1[i] + v2[i];
+  }
+  return resultado;
+}
+
+void pedirCoeficientes(float* coeficientes, int orden){
+  for(int i = 0; i < orden; i++){
+    printf("Ingresar el coeficiente a%d-> ", i);
+    scanf("%f", &coeficientes[i]);
   }
 }
 
@@ -128,7 +184,6 @@ void llenarMatriz(float** Matriz, int orden, float coeficientes[]){
   }*/
 
 }
-
 void liberarMemoria(float* arr){
   free(arr);
 }
@@ -143,7 +198,9 @@ void plot(){
   char * configGnuplot[] = {"set title \"Solucion a la ecuación diferencial\"",
                                 "set ylabel \"Y\"",
                                 "set xlabel \"X\"",
-                                "plot \"solucion.dat\" with lines"
+                                "plot \"solucion.dat\" with lines",
+                                "set autoscale",
+                                "replot"
                                };
   FILE * ventanaGnuplot = popen ("gnuplot -persist", "w");
   for (int i=0; i < 4; i++){
