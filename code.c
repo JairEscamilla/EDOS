@@ -3,6 +3,10 @@
 #include <math.h>
 
 
+typedef enum defErrores{
+  TODOBIEN, INGRESO_CADENA, INGRESO_CARCTER_INCORRECTO
+}Errores;
+
 
 // PROTOTIPOS DE FUNCIONES
 float f(float x, float y);
@@ -19,22 +23,27 @@ float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden);
 float* matrizporEscalar(float* ut, float h, float x, float y, int orden);
 void pedirCoeficientes(float* coeficientes, int orden);
 float* sumarVectores(float* v1, float* v2, int orden);
+void verificarErrores(Errores error[], int cantidad);
 void plot();
+
+
 // FUNCION PRINCIPAL
 int main(){
+  Errores error[5];
   int n, orden;
   float h, x0, y0, *valoresNuevos, *valoresInicialesy, *valoresInicialesx, *uT, **Matriz, *coeficientes;
   printf("Ingresar el orden de la EDO-> ");
-  scanf("%d", &orden);
+  error[0] = scanf("%d", &orden);
   printf("Ingresar tamaño de salto (h)-> ");
-  scanf("%f", &h);
+  error[1] = scanf("%f", &h);
   printf("Ingresar numero de pasos (n)-> ");
-  scanf("%d", &n);
+  error[2] = scanf("%d", &n);
   if(orden == 1){
     printf("Ingresar x0-> ");
-    scanf("%f", &x0);
+    error[3] = scanf("%f", &x0);
     printf("Ingresar y0-> ");
-    scanf("%f", &y0);
+    error[4] = scanf("%f", &y0);
+    verificarErrores(error, 5);
     printf("Espere un momento mientras se calcula la solucion... \n");
     euler(x0, y0, n, h);
     printf("Ejecucion terminada... \n");
@@ -62,7 +71,7 @@ int main(){
 
 // Función de ecuacion diferencial
 float f(float x, float y){
-  return 2 - exp(-4*x) - 2*y;
+  return cos(x);
 }
 
 
@@ -97,12 +106,17 @@ float** generarMatriz(int ancho, int alto){
 }
 
 void pedirValoresIniciales(float* valoresInicialesx, float* valoresInicialesy, int orden){
+  Errores er[orden*2];
+  int cont = 0;
   for(int i = 0; i < orden; i++){
     printf("Ingresar x%d inicial-> ", i);
-    scanf("%f", &valoresInicialesx[i]);
+    er[cont] = scanf("%f", &valoresInicialesx[i]);
+    cont++;
     printf("Ingresar y%d inicial-> ", i);
-    scanf("%f", &valoresInicialesy[i]);
+    er[cont] = scanf("%f", &valoresInicialesy[i]);
+    cont++;
   }
+  verificarErrores(er, orden*2);
 }
 
 void valoresUT(float* ut, int orden){
@@ -141,6 +155,18 @@ float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden){
   return resultado;
 }
 
+void verificarErrores(Errores error[], int cantidad){
+  int err = 0;
+  for(int i = 0; i < cantidad; i++){
+    if(error[i] == 0)
+      err = 1;
+  }
+  if(err){
+    printf("\nHa ocurrido el error con codigo: %d\n", error[err]);
+    exit(0);
+  }
+}
+
 float* matrizporEscalar(float* ut, float h, float x, float y, int orden){
   float *resultados = generarArreglo(orden);
   for(int i = 0; i < orden; i++){
@@ -158,10 +184,12 @@ float* sumarVectores(float* v1, float* v2, int orden){
 }
 
 void pedirCoeficientes(float* coeficientes, int orden){
+  Errores er[orden];
   for(int i = 0; i < orden; i++){
     printf("Ingresar el coeficiente a%d-> ", i);
-    scanf("%f", &coeficientes[i]);
+    er[i] = scanf("%f", &coeficientes[i]);
   }
+  verificarErrores(er, orden);
 }
 
 void llenarMatriz(float** Matriz, int orden, float coeficientes[]){
@@ -175,13 +203,6 @@ void llenarMatriz(float** Matriz, int orden, float coeficientes[]){
   for(int i = 0; i < orden; i++){
     Matriz[orden-1][i] = coeficientes[i];
   }
-
-  /*for(int i = 0; i < orden; i++){
-    for(int j = 0; j < orden; j++){
-      printf("%f ", Matriz[i][j]);
-    }
-    printf("\n");
-  }*/
 
 }
 void liberarMemoria(float* arr){
