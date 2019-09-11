@@ -62,7 +62,7 @@ int main(){
 
 // Función de ecuacion diferencial
 float f(float x, float y){
-  return x + 3*y;
+  return 2 - exp(-4*x) - 2*y;
 }
 
 
