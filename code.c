@@ -81,7 +81,7 @@ int main(){
     * @param float y. Parametro y para evaluar en la funcion
 */
 float f(float x, float y){
-  return cos(x);
+  return 2 - exp(x*y);
 }
 
 
