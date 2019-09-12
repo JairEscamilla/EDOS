@@ -26,7 +26,7 @@ void liberarMemoria(float* arr);
 void liberarMemoriaMat(float** matriz, int alto);
 void llenarMatriz(float** Matriz, int orden, float coeficientes[]);
 void resolverEcuacion(float** Matriz, float* valoresInicialesy, float* valoresInicialesx, float* uT, float h, int n, int orden);
-float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden);
+float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden, float h);
 float* matrizporEscalar(float* ut, float h, float x, float y, int orden);
 void pedirCoeficientes(float* coeficientes, int orden);
 float* sumarVectores(float* v1, float* v2, int orden);
@@ -81,7 +81,7 @@ int main(){
     * @param float y. Parametro y para evaluar en la funcion
 */
 float f(float x, float y){
-  return 2 - exp(x*y);
+  return x - 3*y;
 }
 
 
@@ -177,7 +177,7 @@ void resolverEcuacion(float** Matriz, float* valoresInicialesy, float* valoresIn
   FILE* fp = fopen("solucion.dat", "wt");
   fprintf(fp, "%f, %f\n", valoresInicialesx[orden-1], valoresInicialesy[orden-1]);
   for(int i = 0; i < n; i++){
-    valoresInicialesy = sumarVectores(multiplicarMatrices(Matriz, valoresInicialesy, orden), matrizporEscalar(uT, h, valoresInicialesx[orden-1], valoresInicialesy[orden-1], orden), orden);
+    valoresInicialesy = sumarVectores(multiplicarMatrices(Matriz, valoresInicialesy, orden, h), matrizporEscalar(uT, h, valoresInicialesx[orden-1], valoresInicialesy[orden-1], orden), orden);
     for(int j = 0; j < orden; j++){
       valoresInicialesx[j] = valoresInicialesx[j] + h;
     }
@@ -191,13 +191,13 @@ void resolverEcuacion(float** Matriz, float* valoresInicialesy, float* valoresIn
     * @param float* Matriz2. Matriz 2 a operar
     * @param int orden. Orden de las matrices.
 */
-float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden){
+float* multiplicarMatrices(float** Matriz1, float* Matriz2, int orden, float h){
   float contador = 0;
   float* resultado = generarArreglo(orden);
   for(int i = 0; i < orden; i++){
     contador = 0;
     for(int j = 0; j < orden; j++){
-      contador+= Matriz1[i][j] * Matriz2[j];
+      contador+= h*Matriz1[i][j] * Matriz2[j];
     }
     resultado[i] = contador;
   }
