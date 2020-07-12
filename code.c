@@ -1,6 +1,6 @@
 
 /*
-* @author:  Allan Jair Escamilla Hernández, Alan Flores Quezada
+* @author:  Allan Jair Escamilla Hernández
 * @date:    11/septiembre/2019
 * @file:    code.c
 */
