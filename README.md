@@ -26,10 +26,7 @@ _Menciona las herramientas que utilizaste para crear tu proyecto_
 * [C] - Lenguaje de programación de bajo nivel
 
 
-## Autores ✒️
+## Autor ✒️
 
 
 * **Allan Jair Escamilla Hernández** - [jairescamilla](https://github.com/jairescamilla)
-* **César Mauricio Arellano V.** - [cesararellano](https://github.com/cesararellano)
-* **Raúl González Portillo.** - [raulgonzalezportillo](https://github.com/raulgonzalezportillo)
-
